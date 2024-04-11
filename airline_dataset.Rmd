@@ -1,0 +1,146 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-02-12"
+---
+
+```{R}
+airline_dataset=read.csv('C:/Users/Vamsi Krishna BOPPE/OneDrive/Desktop/New folder/test.csv',sep=",", header=TRUE, na.strings = c("", "N/A"))
+
+```
+
+
+#13. (1pt) Explore the overall structure of the dataset using “str” and “summary” functions.
+
+```{R}
+
+str(airline_dataset)
+
+```
+```{R}
+summary(airline_dataset)
+
+```
+
+#14. (1pt) What is the type of each variable categorical/discrete or numeric/continuous? For categorical/discrete variables, specify whether it is nominal or ordinal.
+
+```{R}
+data(airline_dataset)
+
+
+var_names = names(airline_dataset)
+
+
+results = data.frame(Variable = character(), Type = character(), Ordinal = character(), stringsAsFactors = FALSE)
+
+
+for (i in 1:length(var_names)) {
+  var <- airline_dataset[[i]]
+  
+  
+  if (is.numeric(var)) {
+    type = "Numeric/Continuous"
+    ordinal <- NA
+  } else {
+    type = "Categorical/Discrete"
+    
+    
+    if (is.ordered(var)) {
+      ordinal = "Ordinal"
+    } else {
+      ordinal = "Nominal"
+    }
+  }
+  
+  
+  results[i,] = c(var_names[i], type, ordinal)
+}
+results
+
+
+```
+
+for the categorial variables the Ordinal is Nominal.
+
+#15. (1pt) Does any of the variables have missing values? Which ones?
+
+```{R}
+colSums(is.na(airline_dataset))
+
+```
+there is 83 missing values in arrival delay in minutes.
+
+```{R}
+airline_dataset <- na.omit(airline_dataset)
+colSums(is.na(airline_dataset))
+sapply(airline_dataset, class)
+
+```
+
+#16. (1pt) Remove the “id” and “X” variables
+```{R}
+airline_dataset=airline_dataset[,-1]
+str(airline_dataset)
+
+```
+
+#17. (4pt) Is there an association between “satisfaction” and any of the other attributes in the dataset? Use appropriate plots and statistic tests to answer this question. 
+
+```{R}
+# mosaicplot(airline_dataset, ylab = "satisfaction", 
+# xlab="Gender", main = "Mosaic graph of carrier vs 
+# satisfaction", shade=TRUE)
+
+mosaicplot(satisfaction~Gender,data=airline_dataset)
+mosaicplot(satisfaction~Customer.Type,data=airline_dataset)
+mosaicplot(satisfaction~Type.of.Travel,data=airline_dataset)
+mosaicplot(satisfaction~Class,data=airline_dataset)
+```
+```{R}
+test1 <- chisq.test(table(airline_dataset$Gender, airline_dataset$satisfaction))
+test2 <- chisq.test(table(airline_dataset$Customer.Type, airline_dataset$satisfaction))
+test3 <- chisq.test(table(airline_dataset$Type.of.Travel, airline_dataset$satisfaction))
+test4 <- chisq.test(table(airline_dataset$Class, airline_dataset$satisfaction))
+test1
+test2
+test3
+test4
+
+```
+
+```{R}
+
+airline_dataset <- na.omit(airline_dataset)
+colSums(is.na(airline_dataset))
+sapply(airline_dataset, class)
+```
+
+```{R}
+
+t.test(airline_dataset$Age~airline_dataset$satisfaction)
+
+t.test(airline_dataset$Flight.Distance~airline_dataset$satisfaction)
+t.test(airline_dataset$Inflight.wifi.service~airline_dataset$satisfaction)
+t.test(airline_dataset$Departure.Arrival.time.convenient~airline_dataset$satisfaction)
+t.test(airline_dataset$Ease.of.Online.booking~airline_dataset$satisfaction)
+t.test(airline_dataset$Gate.location~airline_dataset$satisfaction)
+t.test(airline_dataset$Food.and.drink~airline_dataset$satisfaction)
+t.test(airline_dataset$Online.boarding~airline_dataset$satisfaction)
+t.test(airline_dataset$Seat.comfort~airline_dataset$satisfaction)
+t.test(airline_dataset$Inflight.entertainment~airline_dataset$satisfaction)
+t.test(airline_dataset$On.board.service~airline_dataset$satisfaction)
+t.test(airline_dataset$Leg.room.service~airline_dataset$satisfaction)
+t.test(airline_dataset$Baggage.handling~airline_dataset$satisfaction)
+t.test(airline_dataset$Checkin.service~airline_dataset$satisfaction)
+t.test(airline_dataset$Inflight.service~airline_dataset$satisfaction)
+t.test(airline_dataset$Cleanliness~airline_dataset$satisfaction)
+t.test(airline_dataset$Departure.Delay.in.Minutes~airline_dataset$satisfaction)
+t.test(airline_dataset$Arrival.Delay.in.Minutes~airline_dataset$satisfaction)
+
+
+
+```
+
+
+
+

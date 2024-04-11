@@ -1,0 +1,199 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+1.Explore the overall structure of the dataset using “str” and “summary” functions.  
+
+```{r}
+data <- read.csv(file="C:/ml/realtor.csv")
+```
+
+```{r}
+str(data)
+```
+# 12 Variables and 923159 observations is there.
+
+```{r}
+summary(data)
+```
+2.What is the type of each variable categorical/discrete  or numeric/continuous? For 
+categorical/discrete variables, specify whether it is nominal or ordinal. 
+
+categorical-status,street,full_address,city,state,sold_date 
+numerical-price,bed,bath,acre_lot,zip_code, house_size 
+
+
+```{r}
+install.packages("tidyverse")
+library("tidyverse")
+```
+3.are there any duplicate observations in the data? If so, remove them. You can use  “duplicated” or 
+“unique” functions to answer this question.
+
+
+```{r}
+duplicated(data)
+```
+#this are duplicated observations.
+
+
+```{r}
+unique(data)
+```
+```{r}
+library(magrittr)
+library(dplyr)
+data=data %>% distinct()
+```
+
+4.Does any of the variables have missing values? Which ones?
+
+```{r}
+is.na(data)
+```
+5.The price variable appears to have some extreme values. Remove the outliers in the “price” variable 
+using  the  IQR  method.  IQR  and  quantile  functions  throw  error  if  you  have  NAs  in  your  variable.  Use 
+na.rm=TRUE option inside IQR and quantile methods to ignore the missing price values. 
+
+```{r}
+IQR <- IQR(data$price,na.rm=TRUE)
+```
+
+```{r}
+IQR
+```
+```{r}
+summary(data$price)
+```
+```{r}
+left <- 250000-1.5*IQR
+left
+```
+
+```{r}
+right <-800000 +1.5*IQR
+right
+```
+```{r}
+x <- data$price
+y=x[x<left | x>right]
+y
+```
+```{r}
+quantile(data$price,na.rm=TRUE)
+```
+```{r}
+length(y)
+```
+
+6.Remove all houses with price less than or equal to 50K
+```{r}
+data$price[(data$price<=50000), drop = FALSE]
+```
+```{r}
+data$price
+```
+7.Draw  a  histogram  and  boxplot  of  the  price.  What  can  you  say  about  the  shape  of  price 
+variable? Is the price variable positively skewed, symmetric, or negatively skewed? 
+
+```{r}
+ boxplot(data$price, main="Boxplot of Prices",
+ylab="Price ($)")
+```
+*Many outliers are expensive for their class.
+
+```{r}
+hist(data$price, main = "Histogram of Prices", xlab =
+"Price ($)")
+```
+* The histogram indicates that it is right-skewed.
+
+8.what percentage of the observations are missing for the price variable?
+
+```{r}
+mean(is.na(data$price))*100
+```
+
+9.Use as.Date method to convert the sold_date variable from character string to date/time type. Then from this date/time object create two new attributes (sold_year) and (sold_month) to store the year and month that the house was sold
+
+```{r}
+sold_date_formatted <- as.Date(data$sold_date, format = "%Y-%m-%d")
+sold_date_formatted 
+```
+```{r}
+class(sold_date_formatted) 
+```
+```{r}
+sold_date_month <- format(sold_date_formatted, "%m")
+sold_date_month 
+```
+```{r}
+data$sold_year<- format(sold_date_formatted, "%Y")
+data$sold_year
+```
+10.convert the “state” attribute to factor then take a summary to see how many observations are there 
+for each state. Remove states with only one observation from the data. 
+
+```{r}
+data$state<-as.factor(data$state)
+
+data$state
+```
+```{r}
+attach(data)
+```
+
+```{r}
+summary(data$price)
+```
+```{r}
+library(dplyr)
+
+data<-data %>% group_by(data$state) %>% filter(n()>1)
+```
+```{r}
+summary(data$state)
+```
+
+11.Is there a statistically significant difference between the average house price for different states? 
+Use appropriate plot and statistic test to answer this question. 
+
+
+```{r}
+plot( data$price,na.rm=TRUE ~ data$state , col="blue")
+```
+
+```{r}
+oneway.test ( data$price ~ data$state, data=data)
+
+```
+12.What is the correlation between house_price and the variables sold_year, house_size, bed, and bath?
+
+```{r}
+cor(data$price, data$bath, method = 'spearman',use="pairwise.complete.obs" )
+```
+```{r}
+cor.test(data$price, data$bath, method = 'spearman',use="pairwise.complete.obs" )
+```
+```{r}
+cor(data$price, data$house_size, method = 'spearman',use="pairwise.complete.obs" )
+```
+```{r}
+cor.test(data$price, data$house_size, method = 'spearman',use="pairwise.complete.obs" )
+```
+```{r}
+cor(data$price, data$bed, method = 'spearman',use="pairwise.complete.obs" )
+```
+```{r}
+cor.test(data$price, data$bed, method = 'spearman',use="pairwise.complete.obs" )
+```
+```{r}
+summary(data$sold_year)
+```
+```{r}
+cor(data$price, as.numeric(data$sold_year), method = 'spearman',use="pairwise.complete.obs" )
+```
+```{r}
+cor.test(data$price, as.numeric(data$sold_year), method = 'spearman',use="pairwise.complete.obs" )
+```
+
